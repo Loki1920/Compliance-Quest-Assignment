@@ -40,6 +40,7 @@ This repository contains the implementation of an Account Activation System, des
 ### Automation Approach
 
 - Logic implemented in Apex triggers and classes to handle account activation, contact creation, and data mapping.
+- I have used StringUtils Class to handle Account Type Dynamically.
 - Account activation validation and Account Activation Summary requirement enforced in the UI.
 
 ###  Tests
