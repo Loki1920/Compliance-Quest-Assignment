@@ -1,18 +1,15 @@
 public class AccountTriggerHandler {
+    
     public static void accountTrigger(List<Account> newAccounts, Map<Id, Account> oldMap) {
         List<Contact> newContacts = new List<Contact>();
-        Set<Id> accountIds = new Set<Id>();
-		//  Collecting Id of Account 
-        for (Account acc : newAccounts) {
-            if (acc.Type == 'Customer - Direct' && acc.accountActive__c && (Trigger.isInsert || (Trigger.isUpdate && oldMap.get(acc.Id).accountActive__c == false))) {
-                accountIds.add(acc.Id);
-            }
-        }
         
-        // Account Information 
-   List<Account> accountList = [SELECT Id,Name,Phone,Company_Email__c FROM Account WHERE Id IN :accountIds];
-        if (!accountIds.isEmpty()) {
-            for (Account acc :accountList) {
+        List<String> substringsToCheck = new List<String>{'Customer - Direct', 'Customer - Channel'}; // here we can add our values 
+        
+        for (Account acc : newAccounts) {
+            // Check if the account meets the criteria
+            
+            if (StringUtils.containsAny(acc.Type, substringsToCheck) && acc.accountActive__c && (Trigger.isInsert || (Trigger.isUpdate && oldMap.get(acc.Id).accountActive__c == false))) {
+                // Create a new Contact using Account fields directly
                 newContacts.add(new Contact(
                     FirstName = acc.Name,
                     LastName = 'Customer Representative',
@@ -22,9 +19,12 @@ public class AccountTriggerHandler {
                 ));
             }
         }
-		// null check and insert the contact
+        
+        // Insert the new contacts if there are any
         if (!newContacts.isEmpty()) {
             insert newContacts;
         }
     }
 }
+
+
